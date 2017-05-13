@@ -1,0 +1,16 @@
+## Keep the downloaded file in your working directory
+rm(list = ls(all = TRUE)) #reset workspace as par affect global graphics parameters
+if(!require("dplyr"))
+        install.packages("dplyr")
+library(dplyr)
+houseData <- read.table("./household_power_consumption.txt",stringsAsFactors = FALSE,sep=";",na.strings = "?",header = TRUE)
+houseData$Date <- as.Date(houseData$Date,"%d/%m/%Y")
+DF <- filter(houseData,Date == "2007-02-01"| Date == "2007-02-02")
+dateTime <- paste(DF$Date,DF$Time)
+DF$dateTime <-strptime(dateTime, "%Y-%m-%d %H:%M:%S")
+with(DF,plot(dateTime, Sub_metering_1, type="l", ylab="Energy Sub Metering",col="grey"))
+points(DF$dateTime, DF$Sub_metering_2, type="l", col="red")
+points(DF$dateTime, DF$Sub_metering_3, type="l", col="blue")
+legend("topright",lty = 1,col=c("grey","red","blue"),legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+dev.copy(png,file="plot3.png",width = 480, height = 480)
+dev.off()
